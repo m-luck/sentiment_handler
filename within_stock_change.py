@@ -69,10 +69,13 @@ def get_diff_from_today(tic: str, subtractor, field: str = 'news_volume'):
 
 def plot_last_n_days(vals: List):
     x, y = zip(*vals)
+    x, y = list(x), list(y)
     g = sns.barplot(x=x, y=y, ci=None)
     g.set(xlabel='Date', ylabel='Value')
     plt.xticks(rotation=45)
-    plt.show()
+    plt.tight_layout()
+    fig = g.get_figure()
+    fig.savefig('test.png') 
 
 
 if __name__ == '__main__':
@@ -85,6 +88,6 @@ if __name__ == '__main__':
     except:
         print('Try $python <script_name> news_volume')
     ticks = prepare_quandl()
-    avg, vals = get_historical_avg_of_field(args.ticker, args.property, 10)
+    avg, vals = get_historical_avg_of_field(args.ticker, args.property, 30)
     diff = get_diff_from_today(args.ticker, avg, args.property)
     plot_last_n_days(vals)
