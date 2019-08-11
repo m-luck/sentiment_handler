@@ -75,7 +75,7 @@ def plot_last_n_days(vals: List):
     plt.xticks(rotation=45)
     plt.tight_layout()
     fig = g.get_figure()
-    fig.savefig('test.png') 
+    fig.savefig('test'+str(vals[0])+'.png') 
 
 
 if __name__ == '__main__':
