@@ -20,7 +20,7 @@ def cmdline_args():
                                 formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     p.add_argument("property", help="news_volume")
-    p.add_argument("ticker", help="news_volume")
+    p.add_argument("ticker", help="AAPL")
 
     return(p.parse_args())
 
@@ -61,21 +61,24 @@ def get_diff_from_today(tic: str, subtractor, field: str = 'news_volume'):
     ptr = arrow.utcnow().shift(days=-1).format('YYYY-MM-DD')
     senti_data = quandl.get_table('IFT/NSA', date=ptr, ticker=tic).iloc[0]
     val = senti_data[field]
-    print(val, '-', subtractor)
+    print('Current:', val, '-', 'Avg:', subtractor, '=')
     res = val - subtractor
+    res = float(f'{res:0.2f}')
+    print(res)
 
-    return float(f'{res:0.2f}')
+    return res
 
 
-def plot_last_n_days(vals: List):
+def plot_last_n_days(vals: List, prop, ticker):
+    ptr = arrow.utcnow().shift(days=-1).format('YYYY-MM-DD')
     x, y = zip(*vals)
     x, y = list(x), list(y)
     g = sns.barplot(x=x, y=y, ci=None)
-    g.set(xlabel='Date', ylabel='Value')
+    g.set(xlabel='Date', ylabel=prop+' for '+ticker)
     plt.xticks(rotation=45)
     plt.tight_layout()
     fig = g.get_figure()
-    fig.savefig('test'+str(vals[0])+'.png') 
+    fig.savefig('prop_'+prop+str(vals[0][0])+'.png') 
 
 
 if __name__ == '__main__':
@@ -90,4 +93,4 @@ if __name__ == '__main__':
     ticks = prepare_quandl()
     avg, vals = get_historical_avg_of_field(args.ticker, args.property, 30)
     diff = get_diff_from_today(args.ticker, avg, args.property)
-    plot_last_n_days(vals)
+    plot_last_n_days(vals, args.property, args.ticker)
